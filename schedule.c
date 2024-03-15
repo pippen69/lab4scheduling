@@ -14,6 +14,13 @@ typedef struct{
 	int modem;
 	int cds;	
 } Process;
+typedef struct {
+    int available_mbytes;
+    int available_printers;
+    int available_scanners;
+    int available_modem;
+    int available_cds;
+} Resource;
 
 
 			//dispatcher== file name
