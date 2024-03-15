@@ -24,11 +24,11 @@ typedef struct {
 //void fcfs (const char *dispatcher, Process *process, int num);//num == num of processes 
 void dispatchlist(const char *file, Process *process, int *num);
 void userfeedback(Process *process, int num);
-//void roundrobin(Process *process, int num);
-//void mixedsched(Process *process, int num);
+void roundrobin(Process *process, int num);
+void mixedsched(Process *process, int num);
 void resourcealloc(Process *process, int num, Resources *resources);
-//void memorymanagement(Process *process, int num);
-//void combo(Process *process, int num);*/
+void memorymanagement(Process *process, int num);
+void combo(Process *process, int num);*/
 
 
 int main(){
@@ -42,13 +42,13 @@ int main(){
 
 	dispatchlist(dispatch, process, &num);
 
-	//fcfs (dispatch, process, num);
+	fcfs (dispatch, process, num);
 	userfeedback(process, num);
-	//roundrobin(process, num);
-	//mixedsched(process, num);
+	roundrobin(process, num);
+	mixedsched(process, num);
 	resourcealloc(process, num, &resources);
-	//memorymanagement(process, num);
-	//combo(process, num);
+	memorymanagement(process, num);
+	combo(process, num);
 
 	return 0;
 }
@@ -71,7 +71,7 @@ void dispatchlist(const char *file, Process *process, int *num) {
         &process[*num].scanners,
         &process[*num].modem,
         &process[*num].cds)) == 8) {
-        printf("%d, %d, %d, %d, %d, %d, %d, %d\n",
+        printf("arrival time: %d, priority: %d, processor time: %d, mbytes: %d, printers: %d, scanners: %d, modem: %d, cds: %d\n",
             process[*num].arrivaltime,
             process[*num].priority,
             process[*num].processortime,
@@ -86,7 +86,7 @@ void dispatchlist(const char *file, Process *process, int *num) {
 }
 
 
-//void fcfs (const char *dispatcher, Process *process, int num){}
+void fcfs (const char *dispatcher, Process *process, int num){}
 
 void userfeedback(Process *process, int num){
 	printf("\nUser Feedback function:\n");
