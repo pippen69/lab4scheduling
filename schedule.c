@@ -13,13 +13,6 @@ typedef struct{
 	int cds;	
 } Process;
 
-typedef struct{
-	int printer;
-	int scanner; 
-	int modem;
-	int memory;
-	int cds;	
-} Resources;
 
 			//dispatcher== file name
 //void fcfs (const char *dispatcher, Process *process, int num);//num == num of processes 
