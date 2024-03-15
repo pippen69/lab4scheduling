@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdlib.h>
 
+#define QUANTUM 2 //every 2 seconds 
+
 typedef struct{
 	int arrivaltime;
 	int priority; 
@@ -79,7 +81,20 @@ void dispatchlist(const char *file, Process *process, int *num) {
 }
 
 
-//void fcfs (const char *dispatcher, Process *process, int num){}
+void fcfs (const char *dispatcher, Process *process, int num){
+printf("FCFS for real-time processes:\n");
+    for (int i = 0; i < num; i++) {
+        printf("Arrival Time: %d, Priority: %d, Processor Time: %d, Memory: %d MB, Printers: %d, Scanners: %d, Modem: %d, CDs: %d\n",
+            process[i].arrivaltime,
+            process[i].priority,
+            process[i].processortime,
+            process[i].mbytes,
+            process[i].printers,
+            process[i].scanners,
+            process[i].modem,
+            process[i].cds);
+    }
+}
 
 void userfeedback(Process *process, int num){
 	Process FeedBackQueue[4][num];
@@ -105,19 +120,72 @@ void userfeedback(Process *process, int num){
 	}
 }
 
-/*
+
 void roundrobin(Process *process, int num){
+printf("Round Robin scheduler: ");
+    int remain[num];
+    for (int i = 0; i < num; i++) {
+        remain[i] = process[i].processortime;
+    }
+
+    int current = 0;
+    while (1) {
+        int n = 1;
+        for (int i = 0; i < num; i++) {
+        if (remain[i] > 0) {
+                n = 0;
+                if (remain[i] > QUANTUM) {
+                    current += QUANTUM;
+                    remain[i] -= QUANTUM;
+                    printf("Process %d is executing at time %d\n", i, current);
+                } else {
+                    current += remain[i];
+                    printf("Process %d is executing at time %d\n", i, current);
+                    remain[i] = 0;
+                }
+            }
+        }
+        if (n == 1) {
+            break;
+        }
+    }
 }
 
 void mixedsched(Process *process, int num){
 }
 
 void resourcealloc(Process *process, int num){
+resource->available_mbytes = 1024; 
+ resource->available_printers = 2;  
+resource->available_scanners = 1;  
+resource->available_modem = 1;     
+resource->available_cds = 2;       
+
+    printf("Resource Allocation:");
+
+    for (int i = 0; i < num; i++) {
+        if (process[i].mbytes <= resource->available_mbytes &&
+            process[i].printers <= resource->available_printers &&
+            process[i].scanners <= resource->available_scanners &&
+            process[i].modem <= resource->available_modem &&
+            process[i].cds <= resource->available_cds) {
+
+	resource->available_mbytes -= process[i].mbytes;
+            resource->available_printers -= process[i].printers;
+            resource->available_scanners -= process[i].scanners;
+            resource->available_modem -= process[i].modem;
+            resource->available_cds -= process[i].cds;
+            printf(" %d process allocated resources successfully ", i);
+        } else {
+            printf("allocation failed %d.\n", i);
+        }
+    }
 }
 
 void memorymanagement(Process *process, int num){
+	
 }
 
 void combo(Process *process, int num){
 }
-*/
+
