@@ -36,7 +36,7 @@ int main(){
 	dispatchlist(dispatch, process, &num);
 
 	//fcfs (dispatch, process, num);
-	userfeedback(process, num);
+	//userfeedback(process, num);
 	/*roundrobin(process, num);
 	mixedsched(process, num);
 	resourcealloc(process, num);
@@ -82,16 +82,15 @@ void dispatchlist(const char *file, Process *process, int *num) {
 //void fcfs (const char *dispatcher, Process *process, int num){}
 
 void userfeedback(Process *process, int num){
-	Process FeedBackQueue[3][num];
-	int qlenghts[3] = {0};
+	Process FeedBackQueue[4][num];
+	int qlenghts[4] = {0};
 
 	for(int i = 0; i < num; i++) {
 		int priority = process[i].priority;
 		FeedBackQueue[priority][qlenghts[priority]] = process[i];
 		qlenghts[priority]++;
 	}
-	for(int i = 0; i < 3; i++) {
-		printf("Priority %d feedback queue:\n", i);
+	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < qlenghts[i]; j++){
 			printf("%d, %d, %d, %d, %d, %d, %d, %d\n",
 				FeedBackQueue[i][j].arrivaltime, 
