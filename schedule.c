@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdlib.h>
 
-struct Process{
+typedef struct{
 	int arrivaltime;
 	int priority; 
 	int processortime;
@@ -10,53 +10,98 @@ struct Process{
 	int printers;
 	int scanners;
 	int modem;
-	in cds;	
-};
-			
-void fcfs (const char *dispatch.txt, Process *process, int num);//num == number of processes 
+	int cds;	
+} Process;
+
+typedef struct{
+	int printer;
+	int scanner; 
+	int modem;
+	int memory;
+	int cds;	
+} Resources;
+
+			//dispatcher== file name
+//void fcfs (const char *dispatcher, Process *process, int num);//num == num of processes 
+void dispatchlist(const char *file, Process *process, int *num);
 void userfeedback(Process *process, int num);
-void roundrobin(Process *process, int num);
+/*void roundrobin(Process *process, int num);
 void mixedsched(Process *process, int num);
 void resourcealloc(Process *process, int num);
 void memorymanagement(Process *process, int num);
-void combo(Process *process, int num);
+void combo(Process *process, int num);*/
 
 
 int main(){
-Process process;
+	Process process[10000];
+	int num;
+	char dispatch[1000];
 
-printf("Enter the address of the file 'Dispatcher List' ");
-scan ("%s", dispatch.txt);
+	printf("Enter the address of the file 'Dispatcher List' ");
+	scanf("%s", dispatch);
 
-dispatchlist(dispatch.txt, process, &num);
+	dispatchlist(dispatch, process, &num);
 
-fcfs (process, num);
-userfeedback(process, num);
-roundrobin(process, num);
-mixedsched(process, num);
-resourcealloc(process, num);
-memorymanagement(process, num);
-combo(process, num);
+	//fcfs (dispatch, process, num);
+	userfeedback(process, num);
+	/*roundrobin(process, num);
+	mixedsched(process, num);
+	resourcealloc(process, num);
+	memorymanagement(process, num);
+	combo(process, num);*/
 
-return 0;
+	return 0;
+}
+void dispatchlist(const char *file, Process *process, int *num) {
+    FILE *File = fopen(file, "r");
+    if (File == NULL) {
+        printf("Error opening file.\n");
+        exit(1);
+    }
+
+    while (fscanf(File, "%d,%d,%d,%d,%d,%d,%d,%d", 
+		&process[*num].arrivaltime,
+		&process[*num].priority,
+		&process[*num].processortime,
+		&process[*num].mbytes,
+		&process[*num].printers,
+		&process[*num].scanners,
+		&process[*num].modem,
+		&process[*num].cds) != EOF) {
+        (*num)++;
+    }
+    fclose(File);
 }
 
-
-void fcfs (const char *dispatcher, Process *process, int num){
-printf("FCFS for real-time process");
-for (int i = 0; i < num; i++){
-if (process[i].priority == 0){
-printf("Job %d: arrival time: %d, prirority: %d, requiring %d second(s) of CPU time and %d Mbytes memory. %d printer, %d scanners, %d modem, %d CD", i, arrivalime, priority, processortime, mbytes, printers, scanners, modem, cds);
-}
-}
-}
+//void fcfs (const char *dispatcher, Process *process, int num){}
 
 void userfeedback(Process *process, int num){
-printf("User Feedback scheduler ");
+	Process FeedBackQueue[3][num];
+	int qlenghts[3] = {0};
+
+	for(int i = 0; i < num; i++) {
+		int priority = process[i].priority;
+		FeedBackQueue[priority][qlenghts[priority]] = process[i];
+		qlenghts[priority]++;
+	}
+	for(int i = 0; i < num; i++) {
+		printf("Priority %d feedback queue:\n", i);
+		for(int j = 0; j < qlenghts[i]; j++){
+			printf("%d, %d, %d, %d, %d, %d, %d, %d\n",
+				FeedBackQueue[i][j].arrivaltime, 
+				FeedBackQueue[i][j].priority,
+            	FeedBackQueue[i][j].processortime, 
+				FeedBackQueue[i][j].mbytes,
+                FeedBackQueue[i][j].printers, 
+				FeedBackQueue[i][j].scanners,
+            	FeedBackQueue[i][j].modem, 
+				FeedBackQueue[i][j].cds);
+		}
+	}
 }
 
+/*
 void roundrobin(Process *process, int num){
-
 }
 
 void mixedsched(Process *process, int num){
@@ -70,6 +115,4 @@ void memorymanagement(Process *process, int num){
 
 void combo(Process *process, int num){
 }
-
-
-
+*/
