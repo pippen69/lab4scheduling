@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdlib.h>
 
+#define QUANTUM 2 //every 2 seconds
+
 typedef struct{
 	int arrivaltime;
 	int priority; 
@@ -20,23 +22,29 @@ typedef struct {
     int cds;
 } Resources;
 
-			//dispatcher== file name
-//void fcfs (const char *dispatcher, Process *process, int num);//num == num of processes 
+typedef struct {
+    int total;
+    int *memorymap;
+} Memory;
+
+//dispatcher== file name
+void fcfs (const char *dispatcher, Process *process, int num);//num == num of processes 
 void dispatchlist(const char *file, Process *process, int *num);
 void userfeedback(Process *process, int num);
 void roundrobin(Process *process, int num);
 void mixedsched(Process *process, int num);
 void resourcealloc(Process *process, int num, Resources *resources);
-void memorymanagement(Process *process, int num);
-void combo(Process *process, int num);*/
+void memorymanagement(Process *process, int num, Memory *memory);
+//void combo(Process *process, int num);*/
 
 
 int main(){
 	Process process[1000];
 	Resources resources;
+	Memory memory;
 	int num;
 	char dispatch[100];
-
+	printf("\n");
 	printf("Enter the address of the file 'Dispatcher List' ");
 	scanf("%s", dispatch);
 
@@ -47,8 +55,8 @@ int main(){
 	roundrobin(process, num);
 	mixedsched(process, num);
 	resourcealloc(process, num, &resources);
-	memorymanagement(process, num);
-	combo(process, num);
+	memorymanagement(process, num, &memory);
+	//combo(process, num);
 
 	return 0;
 }
@@ -71,7 +79,7 @@ void dispatchlist(const char *file, Process *process, int *num) {
         &process[*num].scanners,
         &process[*num].modem,
         &process[*num].cds)) == 8) {
-        printf("arrival time: %d, priority: %d, processor time: %d, mbytes: %d, printers: %d, scanners: %d, modem: %d, cds: %d\n",
+        printf("%d, %d, %d, %d, %d, %d, %d, %d\n",
             process[*num].arrivaltime,
             process[*num].priority,
             process[*num].processortime,
@@ -86,7 +94,21 @@ void dispatchlist(const char *file, Process *process, int *num) {
 }
 
 
-void fcfs (const char *dispatcher, Process *process, int num){}
+void fcfs (const char *dispatcher, Process *process, int num){
+	printf("\nFirst Come First Serve function:\n");
+	printf("FCFS for real-time processes:\n");
+    for (int i = 0; i < num; i++) {
+        printf("Arrival Time: %d, Priority: %d, Processor Time: %d, Memory: %d MB, Printers: %d, Scanners: %d, Modem: %d, CDs: %d\n",
+            process[i].arrivaltime,
+            process[i].priority,
+            process[i].processortime,
+            process[i].mbytes,
+            process[i].printers,
+            process[i].scanners,
+            process[i].modem,
+            process[i].cds);
+    }
+}
 
 void userfeedback(Process *process, int num){
 	printf("\nUser Feedback function:\n");
@@ -100,7 +122,7 @@ void userfeedback(Process *process, int num){
 	}
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < qlenghts[i]; j++){
-			printf("%d, %d, %d, %d, %d, %d, %d, %d\n",
+			printf("Arrival Time: %d, Priority: %d, Processor Time: %d, Memory: %d MB, Printers: %d, Scanners: %d, Modem: %d, CDs: %d\n",
 				FeedBackQueue[i][j].arrivaltime, 
 				FeedBackQueue[i][j].priority,
             	FeedBackQueue[i][j].processortime, 
@@ -112,13 +134,77 @@ void userfeedback(Process *process, int num){
 		}
 	}
 }
-/*
+
 void roundrobin(Process *process, int num){
+	printf("\nRound Robin scheduler: ");
+    int remain[num];
+    for (int i = 0; i < num; i++) {
+        remain[i] = process[i].processortime;
+    }
+
+    int current = 0;
+    while (1) {
+        int n = 1;
+        for (int i = 0; i < num; i++) {
+        if (remain[i] > 0) {
+                n = 0;
+                if (remain[i] > QUANTUM) {
+                    current += QUANTUM;
+                    remain[i] -= QUANTUM;
+                    printf("Process %d is executing at time %d\n", i, current);
+                } else {
+                    current += remain[i];
+                    printf("Process %d is executing at time %d\n", i, current);
+                    remain[i] = 0;
+                }
+            }
+        }
+        if (n == 1) {
+            break;
+        }
+    }
 }
 
 void mixedsched(Process *process, int num){
-}
-*/
+printf("\nMixed Scheduling:\n");
+printf("FCFS for real-time processes:\n");
+    for (int i = 0; i < num; i++) {
+        printf("Arrival Time: %d, Priority: %d, Processor Time: %d, Memory: %d MB, Printers: %d, Scanners: %d, Modem: %d, CDs: %d\n",
+            process[i].arrivaltime,
+            process[i].priority,
+            process[i].processortime,
+            process[i].mbytes,
+            process[i].printers,
+            process[i].scanners,
+            process[i].modem,
+            process[i].cds);
+    }
+	printf("Round-Robin scheduling for non-real-time processes:\n");
+    int quantum = QUANTUM;
+    while (1) {
+        int done = 1; // Flag to check if all non-real-time processes are executed
+        for (int i = 0; i < num; i++) {
+            if (process[i].priority > 0 && process[i].processortime > 0) {
+                done = 0; // There are pending non-real-time processes
+                printf("Executing Process %d (Priority: %d)\n", i, process[i].priority);
+                // Simulate execution of the process for the time quantum
+                process[i].processortime -= QUANTUM;
+                if (process[i].processortime < 0) {
+                    process[i].processortime = 0; // Ensure process time doesn't go negative
+                }
+                // Check if process completed execution
+                if (process[i].processortime == 0) {
+                    printf("Process %d completed execution.\n", i);
+                }
+            }
+        }
+        if (done) {
+            break; // All non-real-time processes have completed execution
+        }
+    }
+	
+    }
+
 void resourcealloc(Process *process, int num, Resources *resources) {
 	printf("\nResource alloc function:\n");
 	int i;
@@ -140,10 +226,52 @@ void resourcealloc(Process *process, int num, Resources *resources) {
         }
     }
 }
-/*
-void memorymanagement(Process *process, int num){
+
+void memorymanagement(Process *process, int num, Memory *memory){
+	printf("\nmemory management function:\n");
+	memory->total = 2048; 
+    memory->memorymap = (int *)malloc(memory->total * sizeof(int));
+    if (memory->memorymap == NULL) {
+        printf("malloc failed.\n");
+        exit(1);
+    }
+
+    for (int i = 0; i < memory->total; i++) {
+        memory->memorymap[i] = 0; 
+    }
+
+    printf("Memory Management:");
+
+    for (int i = 0; i < num; i++) {
+        int required = process[i].mbytes / 64; 
+        int allocated = 0;
+
+        for (int j = 0; j <= memory->total - required; j++) {
+            int count = 0;
+            for (int k = j; k < j + required; k++) {
+                if (memory->memorymap[k] == 0) {
+                    count++;
+                } else {
+                    break; // Not enough contiguous free blocks
+                }
+            }
+            if (count == required) {
+                for (int k = j; k < j + required; k++) {
+                    memory->memorymap[k] = 1;
+                }
+                printf("Process %d allocated memory blocks from %d to %d.\n", i, j, j +  - 1);
+                allocated = 1;
+                break;
+            }
+        }
+
+        if (!allocated) {
+            printf("malloc too low %d.\n", i);
+        }
+    }
+
+    free(memory->memorymap);
 }
 
-void combo(Process *process, int num){
-}
-*/
+
+//void combo(Process *process, int num){}
