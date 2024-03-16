@@ -22,6 +22,11 @@ int available_scanners;
 int available_modem;     
 int available_cds;  
 } Resource;
+
+typedef struct {
+    int total;
+    int *memorymap; // Represents memory blocks (1 = allocated, 0 = free)
+} Memory;
 			//dispatcher== file name
 void fcfs (const char *dispatcher, Process *process, int num);//num == num of processes 
 void dispatchlist(const char *file, Process *process, int *num);
@@ -29,7 +34,7 @@ void userfeedback(Process *process, int num);
 void roundrobin(Process *process, int num);
 void mixedsched(Process *process, int num);
 void resourcealloc(Process *process, int num, Resource *resource);
-void memorymanagement(Process *process, int num);
+void memorymanagement(Process *process, int num, Memory *memory);
 void combo(Process *process, int num);
 
 
@@ -72,7 +77,7 @@ void dispatchlist(const char *file, Process *process, int *num) {
         &process[*num].scanners,
         &process[*num].modem,
         &process[*num].cds)) == 8) {
-        printf("%d, %d, %d, %d, %d, %d, %d, %d\n",
+        printf("Arrival Time: %d, Priority: %d, Processor Time: %d, Memory: %d MB, Printers: %d, Scanners: %d, Modem: %d, CDs: %d\n",
             process[*num].arrivaltime,
             process[*num].priority,
             process[*num].processortime,
@@ -188,7 +193,49 @@ resource->available_cds = 2;
     }
 }
 
-void memorymanagement(Process *process, int num){
+void memorymanagement(Process *process, int num, Memory *memory){
+	memory->total_memory = 2048; 
+    memory->memory_map = (int *)malloc(memory->total_memory * sizeof(int));
+    if (memory->memory_map == NULL) {
+        printf("malloc failed.\n");
+        exit(1);
+    }
+
+    for (int i = 0; i < memory->total_memory; i++) {
+        memory->memory_map[i] = 0; 
+    }
+
+    printf("Memory Management:");
+
+    for (int i = 0; i < num; i++) {
+        int required = process[i].mbytes / 64; 
+        int allocated = 0;
+
+        for (int j = 0; j <= memory->total_memory - required; j++) {
+            int count = 0;
+            for (int k = j; k < j + required; k++) {
+                if (memory->memory_map[k] == 0) {
+                    count++;
+                } else {
+                    break; // Not enough contiguous free blocks
+                }
+            }
+            if (count == required) {
+                for (int k = j; k < j + required; k++) {
+                    memory->memory_map[k] = 1;
+                }
+                printf("Process %d allocated memory blocks from %d to %d.\n", i, j, j +  - 1);
+                allocated = 1;
+                break;
+            }
+        }
+
+        if (!allocated) {
+            printf("malloc too low %d.\n", i);
+        }
+    }
+
+    free(memory->memory_map);
 	
 }
 
