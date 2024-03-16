@@ -303,4 +303,194 @@ void memorymanagement(Process *process, int num, Memory *memory){
 }
 
 void combo(Process *process, int num){
+	printf("FCFS for real-time processes:\n");
+    for (int i = 0; i < num; i++) {
+        printf("Arrival Time: %d, Priority: %d, Processor Time: %d, Memory: %d MB, Printers: %d, Scanners: %d, Modem: %d, CDs: %d\n",
+            process[i].arrivaltime,
+            process[i].priority,
+            process[i].processortime,
+            process[i].mbytes,
+            process[i].printers,
+            process[i].scanners,
+            process[i].modem,
+            process[i].cds);
+    }
+	Process FeedBackQueue[4][num];
+	int qlenghts[4] = {0};
+
+	for(int i = 0; i < num; i++) {
+		int priority = process[i].priority;
+		FeedBackQueue[priority][qlenghts[priority]] = process[i];
+		qlenghts[priority]++;
+	}
+	for(int i = 0; i < 4; i++) {
+		for(int j = 0; j < qlenghts[i]; j++){
+			printf("%d, %d, %d, %d, %d, %d, %d, %d\n",
+				FeedBackQueue[i][j].arrivaltime, 
+				FeedBackQueue[i][j].priority,
+            	FeedBackQueue[i][j].processortime, 
+				FeedBackQueue[i][j].mbytes,
+                FeedBackQueue[i][j].printers, 
+				FeedBackQueue[i][j].scanners,
+            	FeedBackQueue[i][j].modem, 
+				FeedBackQueue[i][j].cds);
+		}
+	}
+	printf("Round Robin scheduler: ");
+    int remain[num];
+    for (int i = 0; i < num; i++) {
+        remain[i] = process[i].processortime;
+    }
+
+    int current = 0;
+    while (1) {
+        int n = 1;
+        for (int i = 0; i < num; i++) {
+        if (remain[i] > 0) {
+                n = 0;
+                if (remain[i] > QUANTUM) {
+                    current += QUANTUM;
+                    remain[i] -= QUANTUM;
+                    printf("Process %d is executing at time %d\n", i, current);
+                } else {
+                    current += remain[i];
+                    printf("Process %d is executing at time %d\n", i, current);
+                    remain[i] = 0;
+                }
+            }
+        }
+        if (n == 1) {
+            break;
+        }
+    }
+	printf("Mixed Scheduling:\n");
+printf("FCFS for real-time processes:\n");
+    for (int i = 0; i < num; i++) {
+        printf("Arrival Time: %d, Priority: %d, Processor Time: %d, Memory: %d MB, Printers: %d, Scanners: %d, Modem: %d, CDs: %d\n",
+            process[i].arrivaltime,
+            process[i].priority,
+            process[i].processortime,
+            process[i].mbytes,
+            process[i].printers,
+            process[i].scanners,
+            process[i].modem,
+            process[i].cds);
+    }
+	printf("Round-Robin scheduling for non-real-time processes:\n");
+    int quantum = TIME_QUANTUM;
+    while (1) {
+        int done = 1; // Flag to check if all non-real-time processes are executed
+        for (int i = 0; i < num; i++) {
+            if (process[i].priority > 0 && process[i].processortime > 0) {
+                done = 0; // There are pending non-real-time processes
+                printf("Executing Process %d (Priority: %d)\n", i, process[i].priority);
+                // Simulate execution of the process for the time quantum
+                process[i].processortime -= TIME_QUANTUM;
+                if (process[i].processortime < 0) {
+                    process[i].processortime = 0; // Ensure process time doesn't go negative
+                }
+                // Check if process completed execution
+                if (process[i].processortime == 0) {
+                    printf("Process %d completed execution.\n", i);
+                }
+            }
+        }
+        if (done) {
+            break; // All non-real-time processes have completed execution
+        }
+    }
+	
+    }
+
+    // Round-Robin scheduling for non-real-time processes (priority > 0)
+    printf("Round-Robin scheduling for non-real-time processes:\n");
+    int quantum = TIME_QUANTUM;
+    while (1) {
+        int done = 1; // Flag to check if all non-real-time processes are executed
+        for (int i = 0; i < num; i++) {
+            if (process[i].priority > 0 && process[i].processortime > 0) {
+                done = 0; // There are pending non-real-time processes
+                printf("Executing Process %d (Priority: %d)\n", i, process[i].priority);
+                // Simulate execution of the process for the time quantum
+                process[i].processortime -= TIME_QUANTUM;
+                if (process[i].processortime < 0) {
+                    process[i].processortime = 0; // Ensure process time doesn't go negative
+                }
+                // Check if process completed execution
+                if (process[i].processortime == 0) {
+                    printf("Process %d completed execution.\n", i);
+                }
+            }
+        }
+        if (done) {
+            break; // All non-real-time processes have completed execution
+        }
+    }
+resource->available_mbytes = 1024; 
+ resource->available_printers = 2;  
+resource->available_scanners = 1;  
+resource->available_modem = 1;     
+resource->available_cds = 2;       
+
+    printf("Resource Allocation:");
+
+    for (int i = 0; i < num; i++) {
+        if (process[i].mbytes <= resource->available_mbytes &&
+            process[i].printers <= resource->available_printers &&
+            process[i].scanners <= resource->available_scanners &&
+            process[i].modem <= resource->available_modem &&
+            process[i].cds <= resource->available_cds) {
+
+	resource->available_mbytes -= process[i].mbytes;
+            resource->available_printers -= process[i].printers;
+            resource->available_scanners -= process[i].scanners;
+            resource->available_modem -= process[i].modem;
+            resource->available_cds -= process[i].cds;
+            printf(" %d process allocated resources successfully ", i);
+        } else {
+            printf("allocation failed %d.\n", i);
+        }
+    }
+memory->total_memory = 2048; 
+    memory->memory_map = (int *)malloc(memory->total_memory * sizeof(int));
+    if (memory->memory_map == NULL) {
+        printf("malloc failed.\n");
+        exit(1);
+    }
+
+    for (int i = 0; i < memory->total_memory; i++) {
+        memory->memory_map[i] = 0; 
+    }
+
+    printf("Memory Management:");
+
+    for (int i = 0; i < num; i++) {
+        int required = process[i].mbytes / 64; 
+        int allocated = 0;
+
+        for (int j = 0; j <= memory->total_memory - required; j++) {
+            int count = 0;
+            for (int k = j; k < j + required; k++) {
+                if (memory->memory_map[k] == 0) {
+                    count++;
+                } else {
+                    break; // Not enough contiguous free blocks
+                }
+            }
+            if (count == required) {
+                for (int k = j; k < j + required; k++) {
+                    memory->memory_map[k] = 1;
+                }
+                printf("Process %d allocated memory blocks from %d to %d.\n", i, j, j +  - 1);
+                allocated = 1;
+                break;
+            }
+        }
+
+        if (!allocated) {
+            printf("malloc too low %d.\n", i);
+        }
+    }
+
+    free(memory->memory_map);
 }
