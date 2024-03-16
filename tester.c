@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdlib.h>
 
-#define QUANTUM 2 //every 2 seconds 
+#define QUANTUM 1
 
 typedef struct{
 	int arrivaltime;
