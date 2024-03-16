@@ -163,6 +163,69 @@ printf("Round Robin scheduler: ");
 }
 
 void mixedsched(Process *process, int num){
+printf("Mixed Scheduling:\n");
+printf("FCFS for real-time processes:\n");
+    for (int i = 0; i < num; i++) {
+        printf("Arrival Time: %d, Priority: %d, Processor Time: %d, Memory: %d MB, Printers: %d, Scanners: %d, Modem: %d, CDs: %d\n",
+            process[i].arrivaltime,
+            process[i].priority,
+            process[i].processortime,
+            process[i].mbytes,
+            process[i].printers,
+            process[i].scanners,
+            process[i].modem,
+            process[i].cds);
+    }
+	printf("Round-Robin scheduling for non-real-time processes:\n");
+    int quantum = TIME_QUANTUM;
+    while (1) {
+        int done = 1; // Flag to check if all non-real-time processes are executed
+        for (int i = 0; i < num; i++) {
+            if (process[i].priority > 0 && process[i].processortime > 0) {
+                done = 0; // There are pending non-real-time processes
+                printf("Executing Process %d (Priority: %d)\n", i, process[i].priority);
+                // Simulate execution of the process for the time quantum
+                process[i].processortime -= TIME_QUANTUM;
+                if (process[i].processortime < 0) {
+                    process[i].processortime = 0; // Ensure process time doesn't go negative
+                }
+                // Check if process completed execution
+                if (process[i].processortime == 0) {
+                    printf("Process %d completed execution.\n", i);
+                }
+            }
+        }
+        if (done) {
+            break; // All non-real-time processes have completed execution
+        }
+    }
+	
+    }
+
+    // Round-Robin scheduling for non-real-time processes (priority > 0)
+    printf("Round-Robin scheduling for non-real-time processes:\n");
+    int quantum = TIME_QUANTUM;
+    while (1) {
+        int done = 1; // Flag to check if all non-real-time processes are executed
+        for (int i = 0; i < num; i++) {
+            if (process[i].priority > 0 && process[i].processortime > 0) {
+                done = 0; // There are pending non-real-time processes
+                printf("Executing Process %d (Priority: %d)\n", i, process[i].priority);
+                // Simulate execution of the process for the time quantum
+                process[i].processortime -= TIME_QUANTUM;
+                if (process[i].processortime < 0) {
+                    process[i].processortime = 0; // Ensure process time doesn't go negative
+                }
+                // Check if process completed execution
+                if (process[i].processortime == 0) {
+                    printf("Process %d completed execution.\n", i);
+                }
+            }
+        }
+        if (done) {
+            break; // All non-real-time processes have completed execution
+        }
+    }
 }
 
 void resourcealloc(Process *process, int num, Resource *resource){
